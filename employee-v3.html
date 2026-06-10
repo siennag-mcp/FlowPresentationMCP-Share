@@ -323,7 +323,7 @@
   <section class="steps" aria-label="How it works">
     <div class="step"><strong>Step 1</strong><span>Paste notes or try the example</span></div>
     <div class="step"><strong>Step 2</strong><span>Click Auto-Fill and review the fields</span></div>
-    <div class="step"><strong>Step 3</strong><span>Create My PowerPoint — preview uses chevron buttons to move between slides</span></div>
+    <div class="step"><strong>Step 3</strong><span>Create My PowerPoint and download</span></div>
   </section>
 
   <form id="builder-form">
@@ -392,7 +392,7 @@ Dates: July 15 kickoff, August 1 training, September 30 rollout</pre>
     <strong>Your presentation is ready.</strong>
     <p id="result-summary">These links are unique to your submission.</p>
     <a id="download-link" href="#">Download PowerPoint</a>
-    <a id="preview-link" class="secondary" href="#">Preview (chevron navigation)</a>
+    <a id="preview-link" class="secondary" href="#">Preview in Browser</a>
   </section>
 
   <section class="error" id="error"></section>
@@ -453,7 +453,13 @@ function hasRichLabels(text) {
   return /(accomplishments|goals|metrics|kpis|team|next steps|challenges|dates)\s*:/i.test(text);
 }
 
+function looksLikeInstructions(text) {
+  return /\b(fix \d|need to be fixed|do not change|do not rebuild|only fix|show me proof|two things need to be fixed|before redeploying)\b/i.test(text)
+    && !hasRichLabels(text);
+}
+
 function buildStatsFromNotes(text) {
+  if (looksLikeInstructions(text)) return "";
   if (hasRichLabels(text)) return text.trim();
   const labeled = section(text, ["Stats", "Metrics", "KPIs", "Numbers", "Notes", "Highlights", "Content"]);
   if (labeled) return labeled;
@@ -558,6 +564,12 @@ form.addEventListener("submit", async (event) => {
     updateChecklist();
     return;
   }
+  if (looksLikeInstructions(field("stats").value)) {
+    errorBox.textContent = "Presentation Content looks like instructions or bug notes — not your work update. Paste your actual accomplishments and metrics, or click Try an Example.";
+    errorBox.style.display = "block";
+    addMsg("That text looks like fix instructions, not presentation content. Click Try an Example to load a real sample.");
+    return;
+  }
   result.style.display = "none";
   errorBox.style.display = "none";
   const button = document.getElementById("submit-btn");
@@ -578,7 +590,7 @@ form.addEventListener("submit", async (event) => {
     downloadLink.href = payload.downloadUrl;
     previewLink.href = payload.previewUrl;
     const count = payload.slideCount || "your";
-    resultSummary.textContent = `We created ${count} branded slides with Peach State chevrons on every slide. Use the chevron buttons in the browser preview to move between slides, then download your PowerPoint.`;
+    resultSummary.textContent = `We created ${count} branded slides from your content. Preview in browser first, then download your PowerPoint.`;
     result.style.display = "block";
     result.scrollIntoView({ behavior: "smooth", block: "nearest" });
     addMsg(`Ready! ${count} slides were created. Preview in browser or download PowerPoint.`);

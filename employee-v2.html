@@ -3,223 +3,114 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Peach State Presentation Builder V2</title>
+<title>Peach State AI Presentation Builder</title>
 <style>
-  :root { --red:#e5231f; --ink:#1a1d1f; --muted:#555b60; --bg:#f5f5f5; --panel:#fff; }
-  * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; font-family:Arial,Helvetica,sans-serif; color:var(--ink);
-    background:linear-gradient(120deg,rgba(229,35,31,.08),transparent 42%),var(--bg); padding:28px 18px; }
-  main { width:min(1040px,100%); margin:0 auto 80px; background:var(--panel); border-radius:22px;
-    box-shadow:0 20px 55px rgba(0,0,0,.13); overflow:hidden; }
-  .hero { border-left:14px solid var(--red); padding:34px 40px 22px; }
-  .kicker { color:var(--red); font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-size:13px; }
-  h1 { margin:12px 0 8px; font-size:clamp(30px,5vw,52px); line-height:1.03; }
-  p { color:var(--muted); line-height:1.5; margin:0; }
-  form { display:grid; gap:18px; padding:28px 40px 38px; }
-  .smart { background:#f7f7f7; border:1px solid #dedede; border-radius:16px; padding:18px; display:grid; gap:12px; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  label { display:grid; gap:8px; font-weight:700; }
-  input, textarea { width:100%; border:1px solid #d6d8da; border-radius:10px; padding:13px 14px; font:inherit; }
-  textarea { min-height:105px; resize:vertical; }
-  button { border:0; border-radius:10px; background:var(--red); color:#fff; font-weight:800; font-size:16px;
-    padding:13px 16px; cursor:pointer; width:fit-content; }
-  button.secondary { background:#4f565a; }
-  button[disabled] { opacity:.65; cursor:progress; }
-  .result,.error { display:none; margin:0 40px 38px; padding:20px; border-radius:14px; }
-  .result { background:#f1f7f2; border:1px solid #cfe6d3; }
-  .error { background:#fff0ef; color:#8b1713; border:1px solid #f0bbb8; font-weight:700; }
-  .result a { display:inline-block; margin:14px 10px 0 0; padding:11px 14px; border-radius:8px;
-    background:var(--red); color:#fff; text-decoration:none; font-weight:800; }
-  .result a.secondary { background:#4f565a; }
-  .chat-toggle { position:fixed; right:22px; bottom:22px; width:60px; height:60px; border-radius:50%;
-    background:var(--red); color:#fff; border:0; box-shadow:0 12px 32px rgba(0,0,0,.22); font-size:24px; z-index:10; }
-  .chat { position:fixed; right:22px; bottom:94px; width:min(380px,calc(100vw - 44px)); height:520px; background:#fff;
-    border-radius:18px; box-shadow:0 18px 55px rgba(0,0,0,.24); display:none; flex-direction:column; overflow:hidden; z-index:10; }
-  .chat header { background:var(--ink); color:#fff; padding:14px 16px; font-weight:800; }
-  .messages { flex:1; padding:14px; overflow:auto; display:grid; gap:10px; align-content:start; }
-  .msg { padding:10px 12px; border-radius:12px; max-width:88%; line-height:1.35; font-size:14px; }
-  .bot { background:#f1f1f1; }
-  .user { background:#ffe8e6; justify-self:end; }
-  .chat form { padding:12px; border-top:1px solid #eee; display:flex; gap:8px; }
-  .chat input { padding:10px; }
-  .chat form button { padding:10px 12px; font-size:14px; }
-  @media(max-width:780px){ .grid{grid-template-columns:1fr;} .hero,form{padding-left:24px;padding-right:24px;} }
+  :root{--red:#e5231f;--ink:#1a1d1f;--muted:#555b60;--bg:#f5f5f5;--panel:#fff}
+  *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+  .app{min-height:100vh;display:grid;grid-template-columns:minmax(360px,440px) 1fr}
+  .chat{background:#fff;border-right:1px solid #ddd;display:flex;flex-direction:column;min-height:100vh}
+  header{padding:28px 26px;border-left:12px solid var(--red);box-shadow:0 4px 18px rgba(0,0,0,.06);z-index:1}
+  .kicker{color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+  h1{font-size:30px;line-height:1.05;margin:10px 0 8px} p{color:var(--muted);line-height:1.45;margin:0}
+  .messages{flex:1;overflow:auto;padding:22px;display:grid;gap:12px;align-content:start}
+  .msg{padding:12px 14px;border-radius:14px;max-width:92%;line-height:1.4;white-space:pre-wrap}
+  .assistant{background:#f1f1f1}.user{background:#ffe7e5;justify-self:end}.system{background:#eef6ef;border:1px solid #cfe6d3}
+  .composer{padding:16px;border-top:1px solid #e5e5e5;display:grid;gap:10px}
+  textarea{width:100%;min-height:92px;resize:vertical;border:1px solid #ccc;border-radius:12px;padding:12px;font:inherit}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}button,a.button{border:0;border-radius:10px;background:var(--red);color:#fff;padding:12px 14px;font-weight:800;text-decoration:none;cursor:pointer}
+  button.secondary,a.secondary{background:#4f565a}button[disabled]{opacity:.65;cursor:progress}
+  .preview{min-height:100vh;padding:24px;display:grid;grid-template-rows:auto 1fr;gap:16px}
+  .previewTop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .frame{background:#111;border-radius:18px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.18);min-height:640px}
+  iframe{width:100%;height:100%;min-height:640px;border:0;background:#111}.empty{display:grid;place-items:center;text-align:center;color:#777;background:#fff;border:1px dashed #bbb;border-radius:18px;min-height:640px;padding:40px}
+  @media(max-width:900px){.app{grid-template-columns:1fr}.chat{min-height:60vh}.preview{min-height:auto}}
 </style>
 </head>
 <body>
-<main>
-  <section class="hero">
-    <div class="kicker">Peach State Truck Centers</div>
-    <h1>Build Your Full Presentation</h1>
-    <p>Paste notes to auto-fill, or complete each field. Every submission gets its own isolated PowerPoint link.</p>
+<main class="app">
+  <section class="chat">
+    <header>
+      <div class="kicker">Peach State Truck Centers</div>
+      <h1>AI Presentation Builder</h1>
+      <p>Answer a few natural questions. The AI chooses slide count, layouts, charts, timelines, team slides, and formatting.</p>
+    </header>
+    <div class="messages" id="messages"></div>
+    <form class="composer" id="chatForm">
+      <textarea id="input" placeholder="Type your answer or change request..."></textarea>
+      <div class="actions">
+        <button id="send" type="submit">Send</button>
+        <button id="download" class="secondary" type="button" disabled>Download PowerPoint</button>
+      </div>
+    </form>
   </section>
-  <form id="builder-form">
-    <section class="smart">
-      <label>Smart Paste Box
-        <textarea id="raw-notes" placeholder="Paste notes, emails, or bullets here. Example: Project Phoenix for Service team. Accomplishments: reduced downtime. Goals: improve response time..."></textarea>
-      </label>
-      <button class="secondary" type="button" id="auto-fill">Auto-Fill Fields</button>
-    </section>
-    <div class="grid">
-      <label>Name <input name="name" required placeholder="Jane Smith" autocomplete="name"></label>
-      <label>Department <input name="department" required placeholder="Service, Parts, Sales..."></label>
-      <label>Date <input name="date" required type="date"></label>
-      <label>Project Name <input name="projectName" placeholder="Project Phoenix"></label>
+  <section class="preview">
+    <div class="previewTop">
+      <div>
+        <div class="kicker">Live Preview</div>
+        <p id="status">No deck yet. Answer the chat questions to generate one.</p>
+      </div>
+      <a class="button secondary" href="employee.html">Open original backup</a>
     </div>
-    <label>Slide Title <input name="slideTitle" placeholder="Quarterly Service Update"></label>
-    <label>Key Accomplishments <textarea name="keyAccomplishments" placeholder="What went well? Wins, launches, improvements..."></textarea></label>
-    <label>Goals <textarea name="goals" placeholder="What are you trying to accomplish next?"></textarea></label>
-    <label>Metrics / KPIs <textarea name="metricsKpis" placeholder="Numbers, KPIs, percentages, goals, trends..."></textarea></label>
-    <label>Team Members <textarea name="teamMembers" placeholder="Names, roles, contributors..."></textarea></label>
-    <label>Challenges <textarea name="challenges" placeholder="Risks, blockers, concerns, lessons learned..."></textarea></label>
-    <label>Next Steps <textarea name="nextSteps" placeholder="Actions, owners, dates, follow-ups..."></textarea></label>
-    <button type="submit">Create My PowerPoint</button>
-  </form>
-  <section class="result" id="result">
-    <strong>Your presentation is ready.</strong>
-    <p>Use the chat bubble to request basic slide edits and get a fresh download link.</p>
-    <a id="download-link" href="#">Download PowerPoint</a>
-    <a id="preview-link" class="secondary" href="#">Open HTML Preview</a>
+    <div id="previewBox" class="empty">
+      <div>
+        <h2>Your presentation preview will appear here.</h2>
+        <p>After the AI builds the deck, you can ask for changes like “add a slide about challenges” or “turn slide 3 into a bar chart.”</p>
+      </div>
+    </div>
   </section>
-  <section class="error" id="error"></section>
 </main>
-
-<button class="chat-toggle" id="chat-toggle" aria-label="Open assistant">?</button>
-<aside class="chat" id="chat">
-  <header>Presentation Assistant</header>
-  <div class="messages" id="messages"></div>
-  <form id="chat-form">
-    <input id="chat-input" placeholder="Ask for help or edit slides..." autocomplete="off">
-    <button type="submit">Send</button>
-  </form>
-</aside>
-
 <script>
-const API_BASE = "https://flowpresentationmcp-sse-production.up.railway.app";
-const form = document.getElementById("builder-form");
-const result = document.getElementById("result");
-const errorBox = document.getElementById("error");
-const downloadLink = document.getElementById("download-link");
-const previewLink = document.getElementById("preview-link");
+const API = "https://flowpresentationmcp-sse-production.up.railway.app";
 const messages = document.getElementById("messages");
-let presentationId = null;
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const download = document.getElementById("download");
+const previewBox = document.getElementById("previewBox");
+const statusEl = document.getElementById("status");
+let sessionId = null;
 
-document.querySelector('input[name="date"]').valueAsDate = new Date();
-
-function addMsg(text, who = "bot") {
-  const div = document.createElement("div");
-  div.className = "msg " + who;
-  div.textContent = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+function add(text, who="assistant"){
+  const div=document.createElement("div"); div.className="msg "+who; div.textContent=text;
+  messages.appendChild(div); messages.scrollTop=messages.scrollHeight;
 }
-addMsg("Hi! Paste notes and click Auto-Fill, or ask me what belongs in any field. After generating, say things like: make the title on slide 3 bigger.");
-
-function field(name) { return form.elements[name]; }
-function fillIfEmpty(name, value) { if (value && !field(name).value.trim()) field(name).value = value.trim(); }
-function section(text, labels) {
-  const lower = text.toLowerCase();
-  for (const label of labels) {
-    const idx = lower.indexOf(label.toLowerCase() + ":");
-    if (idx >= 0) {
-      const start = idx + label.length + 1;
-      const rest = text.slice(start);
-      const next = rest.search(/\n?[A-Za-z /]+:/);
-      return (next > 5 ? rest.slice(0, next) : rest).trim();
-    }
-  }
-  return "";
+function setBusy(busy){ send.disabled=busy; send.textContent=busy?"Thinking...":"Send"; }
+function showPreview(html){
+  const blob = new Blob([html], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+  previewBox.className = "frame";
+  previewBox.innerHTML = `<iframe title="Presentation preview" src="${url}"></iframe>`;
 }
-document.getElementById("auto-fill").addEventListener("click", () => {
-  const text = document.getElementById("raw-notes").value;
-  fillIfEmpty("projectName", section(text, ["Project", "Project Name"]));
-  fillIfEmpty("keyAccomplishments", section(text, ["Accomplishments", "Wins", "Highlights"]));
-  fillIfEmpty("goals", section(text, ["Goals", "Objectives"]));
-  fillIfEmpty("metricsKpis", section(text, ["Metrics", "KPIs", "Numbers", "Stats"]));
-  fillIfEmpty("teamMembers", section(text, ["Team", "Team Members", "People"]));
-  fillIfEmpty("challenges", section(text, ["Challenges", "Risks", "Blockers"]));
-  fillIfEmpty("nextSteps", section(text, ["Next Steps", "Actions", "Follow Up"]));
-  fillIfEmpty("slideTitle", field("projectName").value ? field("projectName").value + " Update" : "");
-  addMsg("I auto-filled what I could. Please review empty fields before generating.");
-});
-
-function incompleteFields() {
-  return ["name","department","slideTitle","keyAccomplishments","goals","metricsKpis","nextSteps"]
-    .filter((name) => !field(name).value.trim());
+async function start(){
+  const res = await fetch(API + "/api/ai-presentations/session", {method:"POST"});
+  const data = await res.json();
+  sessionId = data.sessionId; add(data.reply);
 }
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const missing = incompleteFields();
-  if (missing.length) addMsg("Before generating, consider filling: " + missing.join(", ") + ".");
-  result.style.display = "none"; errorBox.style.display = "none";
-  const button = form.querySelector('button[type="submit"]');
-  button.disabled = true; button.textContent = "Creating...";
-  const values = Object.fromEntries(new FormData(form).entries());
-  const payload = {
-    name: values.name,
-    department: values.department,
-    date: values.date,
-    stats: values.metricsKpis || values.stats || "",
-    fields: {
-      slideTitle: values.slideTitle,
-      keyAccomplishments: values.keyAccomplishments,
-      goals: values.goals,
-      metricsKpis: values.metricsKpis,
-      teamMembers: values.teamMembers,
-      projectName: values.projectName,
-      challenges: values.challenges,
-      nextSteps: values.nextSteps
-    }
-  };
-  try {
-    const response = await fetch(API_BASE + "/api/presentations", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+document.getElementById("chatForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const text=input.value.trim(); if(!text) return;
+  input.value=""; add(text,"user"); setBusy(true);
+  try{
+    const res=await fetch(API + "/api/ai-presentations/" + sessionId + "/message", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({message:text})
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Unable to create presentation.");
-    presentationId = data.presentationId;
-    downloadLink.href = data.downloadUrl; previewLink.href = data.previewUrl;
-    result.style.display = "block";
-    addMsg("Generated! You can now ask for simple edits, like: move the text box on slide 5 to the bottom.");
-  } catch (error) {
-    errorBox.textContent = error.message || String(error); errorBox.style.display = "block";
-  } finally {
-    button.disabled = false; button.textContent = "Create My PowerPoint";
-  }
+    const data=await res.json(); if(!res.ok) throw new Error(data.error || "Something went wrong.");
+    add(data.reply, data.canDownload ? "system" : "assistant");
+    if(data.previewHtml){ showPreview(data.previewHtml); statusEl.textContent = data.deck.slides.length + " slides generated. Ask for changes or download."; }
+    if(data.canDownload) download.disabled=false;
+    if(data.geminiConfigured === false) add("Note: Gemini API key is not configured yet, so this preview used a built-in fallback planner. Add GEMINI_API_KEY in Railway for full AI behavior.","system");
+  }catch(err){ add(err.message || String(err),"system"); }
+  finally{ setBusy(false); }
 });
-
-document.getElementById("chat-toggle").addEventListener("click", () => {
-  const chat = document.getElementById("chat");
-  chat.style.display = chat.style.display === "flex" ? "none" : "flex";
+download.addEventListener("click", async ()=>{
+  download.disabled=true; download.textContent="Preparing...";
+  try{
+    const res=await fetch(API + "/api/ai-presentations/" + sessionId + "/download", {method:"POST"});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error || "Unable to export.");
+    window.open(data.downloadUrl, "_blank"); add("Your personal PowerPoint download opened in a new tab.","system");
+  }catch(err){ add(err.message || String(err),"system"); }
+  finally{ download.disabled=false; download.textContent="Download PowerPoint"; }
 });
-document.getElementById("chat-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const input = document.getElementById("chat-input");
-  const text = input.value.trim(); if (!text) return;
-  input.value = ""; addMsg(text, "user");
-  const lower = text.toLowerCase();
-  if (lower.includes("what") || lower.includes("help")) {
-    addMsg("Use accomplishments for wins, goals for future targets, metrics/KPIs for numbers, challenges for blockers, and next steps for actions/owners/dates.");
-    return;
-  }
-  if (!presentationId) {
-    addMsg("Generate your presentation first, then I can apply slide edit commands.");
-    return;
-  }
-  if (lower.includes("slide") || lower.includes("title") || lower.includes("text box")) {
-    try {
-      const response = await fetch(API_BASE + "/api/presentations/" + presentationId + "/edit", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ command: text })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Unable to edit presentation.");
-      downloadLink.href = data.downloadUrl;
-      addMsg(data.message + " Your download link has been refreshed.");
-    } catch (error) { addMsg(error.message || String(error)); }
-    return;
-  }
-  addMsg("I can guide fields or apply simple edits like 'make the title on slide 3 bigger' or 'move the text box on slide 5 to the bottom.'");
-});
+start().catch(err=>add("Could not start chat: "+err.message,"system"));
 </script>
 </body>
 </html>

@@ -3,114 +3,414 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Peach State AI Presentation Builder</title>
+<title>Peach State Presentation Builder</title>
 <style>
-  :root{--red:#e5231f;--ink:#1a1d1f;--muted:#555b60;--bg:#f5f5f5;--panel:#fff}
-  *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
-  .app{min-height:100vh;display:grid;grid-template-columns:minmax(360px,440px) 1fr}
-  .chat{background:#fff;border-right:1px solid #ddd;display:flex;flex-direction:column;min-height:100vh}
-  header{padding:28px 26px;border-left:12px solid var(--red);box-shadow:0 4px 18px rgba(0,0,0,.06);z-index:1}
-  .kicker{color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
-  h1{font-size:30px;line-height:1.05;margin:10px 0 8px} p{color:var(--muted);line-height:1.45;margin:0}
-  .messages{flex:1;overflow:auto;padding:22px;display:grid;gap:12px;align-content:start}
-  .msg{padding:12px 14px;border-radius:14px;max-width:92%;line-height:1.4;white-space:pre-wrap}
-  .assistant{background:#f1f1f1}.user{background:#ffe7e5;justify-self:end}.system{background:#eef6ef;border:1px solid #cfe6d3}
-  .composer{padding:16px;border-top:1px solid #e5e5e5;display:grid;gap:10px}
-  textarea{width:100%;min-height:92px;resize:vertical;border:1px solid #ccc;border-radius:12px;padding:12px;font:inherit}
-  .actions{display:flex;gap:10px;flex-wrap:wrap}button,a.button{border:0;border-radius:10px;background:var(--red);color:#fff;padding:12px 14px;font-weight:800;text-decoration:none;cursor:pointer}
-  button.secondary,a.secondary{background:#4f565a}button[disabled]{opacity:.65;cursor:progress}
-  .preview{min-height:100vh;padding:24px;display:grid;grid-template-rows:auto 1fr;gap:16px}
-  .previewTop{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .frame{background:#111;border-radius:18px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.18);min-height:640px}
-  iframe{width:100%;height:100%;min-height:640px;border:0;background:#111}.empty{display:grid;place-items:center;text-align:center;color:#777;background:#fff;border:1px dashed #bbb;border-radius:18px;min-height:640px;padding:40px}
-  @media(max-width:900px){.app{grid-template-columns:1fr}.chat{min-height:60vh}.preview{min-height:auto}}
+  :root {
+    --red: #e5231f;
+    --ink: #1a1d1f;
+    --muted: #555b60;
+    --panel: #ffffff;
+    --bg: #f5f5f5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(120deg, rgba(229,35,31,.08), transparent 45%),
+      var(--bg);
+    display: grid;
+    place-items: center;
+    padding: 32px 18px 80px;
+  }
+  main {
+    width: min(920px, 100%);
+    background: var(--panel);
+    border-radius: 22px;
+    box-shadow: 0 20px 55px rgba(0,0,0,.13);
+    overflow: hidden;
+  }
+  .hero {
+    border-left: 14px solid var(--red);
+    padding: 38px 42px 24px;
+  }
+  .kicker {
+    color: var(--red);
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+  h1 {
+    margin: 12px 0 8px;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.03;
+  }
+  p {
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  form {
+    display: grid;
+    gap: 18px;
+    padding: 28px 42px 38px;
+  }
+  .smart {
+    background: #f7f7f7;
+    border: 1px solid #dedede;
+    border-radius: 16px;
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  label {
+    display: grid;
+    gap: 8px;
+    font-weight: 700;
+  }
+  input, textarea {
+    width: 100%;
+    border: 1px solid #d6d8da;
+    border-radius: 10px;
+    padding: 13px 14px;
+    font: inherit;
+  }
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  button {
+    border: 0;
+    border-radius: 10px;
+    background: var(--red);
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 14px 18px;
+    cursor: pointer;
+    width: fit-content;
+  }
+  button.secondary {
+    background: #4f565a;
+  }
+  button[disabled] {
+    opacity: .65;
+    cursor: progress;
+  }
+  .result {
+    display: none;
+    margin: 0 42px 38px;
+    padding: 22px;
+    border-radius: 14px;
+    background: #f1f7f2;
+    border: 1px solid #cfe6d3;
+  }
+  .result a {
+    display: inline-block;
+    margin-top: 14px;
+    margin-right: 10px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    background: var(--red);
+    color: white;
+    text-decoration: none;
+    font-weight: 800;
+  }
+  .result a.secondary {
+    background: #4f565a;
+  }
+  .error {
+    display: none;
+    margin: 0 42px 38px;
+    padding: 18px;
+    border-radius: 12px;
+    background: #fff0ef;
+    color: #8b1713;
+    border: 1px solid #f0bbb8;
+    font-weight: 700;
+  }
+  .chat-toggle {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    border: 0;
+    box-shadow: 0 12px 32px rgba(0,0,0,.22);
+    font-size: 24px;
+    z-index: 10;
+    cursor: pointer;
+  }
+  .chat {
+    position: fixed;
+    right: 22px;
+    bottom: 94px;
+    width: min(380px, calc(100vw - 44px));
+    height: 480px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 18px 55px rgba(0,0,0,.24);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .chat header {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 16px;
+    font-weight: 800;
+  }
+  .messages {
+    flex: 1;
+    padding: 14px;
+    overflow: auto;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .msg {
+    padding: 10px 12px;
+    border-radius: 12px;
+    max-width: 88%;
+    line-height: 1.35;
+    font-size: 14px;
+  }
+  .bot { background: #f1f1f1; }
+  .user { background: #ffe8e6; justify-self: end; }
+  .chat form {
+    padding: 12px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 8px;
+  }
+  .chat input {
+    padding: 10px;
+  }
+  .chat form button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    .hero, form { padding-left: 24px; padding-right: 24px; }
+    .result, .error { margin-left: 24px; margin-right: 24px; }
+  }
 </style>
 </head>
 <body>
-<main class="app">
-  <section class="chat">
-    <header>
-      <div class="kicker">Peach State Truck Centers</div>
-      <h1>AI Presentation Builder</h1>
-      <p>Answer a few natural questions. The AI chooses slide count, layouts, charts, timelines, team slides, and formatting.</p>
-    </header>
-    <div class="messages" id="messages"></div>
-    <form class="composer" id="chatForm">
-      <textarea id="input" placeholder="Type your answer or change request..."></textarea>
-      <div class="actions">
-        <button id="send" type="submit">Send</button>
-        <button id="download" class="secondary" type="button" disabled>Download PowerPoint</button>
-      </div>
-    </form>
+<main>
+  <section class="hero">
+    <div class="kicker">Peach State Truck Centers</div>
+    <h1>Build Your Presentation</h1>
+    <p>Enter your information below. You will receive a private, unique PowerPoint download link for your own copy.</p>
   </section>
-  <section class="preview">
-    <div class="previewTop">
-      <div>
-        <div class="kicker">Live Preview</div>
-        <p id="status">No deck yet. Answer the chat questions to generate one.</p>
-      </div>
-      <a class="button secondary" href="employee.html">Open original backup</a>
-    </div>
-    <div id="previewBox" class="empty">
-      <div>
-        <h2>Your presentation preview will appear here.</h2>
-        <p>After the AI builds the deck, you can ask for changes like “add a slide about challenges” or “turn slide 3 into a bar chart.”</p>
-      </div>
-    </div>
-  </section>
-</main>
-<script>
-const API = "https://flowpresentationmcp-sse-production.up.railway.app";
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
-const send = document.getElementById("send");
-const download = document.getElementById("download");
-const previewBox = document.getElementById("previewBox");
-const statusEl = document.getElementById("status");
-let sessionId = null;
 
-function add(text, who="assistant"){
-  const div=document.createElement("div"); div.className="msg "+who; div.textContent=text;
-  messages.appendChild(div); messages.scrollTop=messages.scrollHeight;
+  <form id="builder-form">
+    <section class="smart">
+      <label>Paste Your Notes
+        <textarea id="raw-notes" placeholder="Paste notes, emails, or bullets here. Example: Jane Smith, Service department. Stats: 98% uptime, 12% revenue growth, 4.8 CSAT. Date: June 10, 2026"></textarea>
+      </label>
+      <button class="secondary" type="button" id="auto-fill">Auto-Fill Fields</button>
+    </section>
+    <div class="grid">
+      <label>Name
+        <input name="name" required placeholder="Jane Smith" autocomplete="name">
+      </label>
+      <label>Department
+        <input name="department" required placeholder="Service, Parts, Sales...">
+      </label>
+    </div>
+    <label>Stats / Notes
+      <textarea name="stats" required placeholder="Example: 98% uptime, 12% revenue growth, 4.8 CSAT"></textarea>
+    </label>
+    <label>Date
+      <input name="date" required type="date">
+    </label>
+    <button type="submit">Create My PowerPoint</button>
+  </form>
+
+  <section class="result" id="result">
+    <strong>Your presentation is ready.</strong>
+    <p>These links are unique to your submission. Only people with the link can access this output.</p>
+    <a id="download-link" href="#">Download PowerPoint</a>
+    <a id="preview-link" class="secondary" href="#">Open HTML Preview</a>
+  </section>
+
+  <section class="error" id="error"></section>
+</main>
+
+<button class="chat-toggle" id="chat-toggle" aria-label="Open assistant">?</button>
+<aside class="chat" id="chat">
+  <header>Presentation Assistant</header>
+  <div class="messages" id="messages"></div>
+  <form id="chat-form">
+    <input id="chat-input" placeholder="Ask for help filling the form..." autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+</aside>
+
+<script>
+const API_URL = "https://flowpresentationmcp-sse-production.up.railway.app/api/presentations";
+const form = document.getElementById("builder-form");
+const result = document.getElementById("result");
+const errorBox = document.getElementById("error");
+const downloadLink = document.getElementById("download-link");
+const previewLink = document.getElementById("preview-link");
+const messages = document.getElementById("messages");
+
+document.querySelector('input[name="date"]').valueAsDate = new Date();
+
+function field(name) { return form.elements[name]; }
+
+function addMsg(text, who = "bot") {
+  const div = document.createElement("div");
+  div.className = "msg " + who;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
-function setBusy(busy){ send.disabled=busy; send.textContent=busy?"Thinking...":"Send"; }
-function showPreview(html){
-  const blob = new Blob([html], {type:"text/html"});
-  const url = URL.createObjectURL(blob);
-  previewBox.className = "frame";
-  previewBox.innerHTML = `<iframe title="Presentation preview" src="${url}"></iframe>`;
+
+addMsg("Hi! I can help you fill out this form. Ask what belongs in Name, Department, Stats, or Date — or click Auto-Fill after pasting your notes.");
+
+function section(text, labels) {
+  const lower = text.toLowerCase();
+  for (const label of labels) {
+    const idx = lower.indexOf(label.toLowerCase() + ":");
+    if (idx >= 0) {
+      const start = idx + label.length + 1;
+      const rest = text.slice(start);
+      const next = rest.search(/\n?[A-Za-z /]+:/);
+      return (next > 5 ? rest.slice(0, next) : rest).trim();
+    }
+  }
+  return "";
 }
-async function start(){
-  const res = await fetch(API + "/api/ai-presentations/session", {method:"POST"});
-  const data = await res.json();
-  sessionId = data.sessionId; add(data.reply);
+
+function fillIfEmpty(name, value) {
+  if (value && !field(name).value.trim()) field(name).value = value.trim();
 }
-document.getElementById("chatForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const text=input.value.trim(); if(!text) return;
-  input.value=""; add(text,"user"); setBusy(true);
-  try{
-    const res=await fetch(API + "/api/ai-presentations/" + sessionId + "/message", {
-      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({message:text})
+
+function parseDate(text) {
+  const iso = text.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+  if (iso) return iso[0];
+  const slash = text.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{2,4})\b/);
+  if (slash) {
+    let year = slash[3];
+    if (year.length === 2) year = "20" + year;
+    const month = slash[1].padStart(2, "0");
+    const day = slash[2].padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  const named = text.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}(?:,\s*\d{4})?\b/i);
+  if (named) {
+    const parsed = new Date(named[0]);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  }
+  return "";
+}
+
+document.getElementById("auto-fill").addEventListener("click", () => {
+  const text = document.getElementById("raw-notes").value.trim();
+  if (!text) {
+    addMsg("Paste your notes first, then click Auto-Fill Fields.");
+    return;
+  }
+  fillIfEmpty("name", section(text, ["Name", "Employee", "Presenter"]));
+  fillIfEmpty("department", section(text, ["Department", "Team", "Division"]));
+  fillIfEmpty("stats", section(text, ["Stats", "Metrics", "KPIs", "Numbers", "Notes", "Highlights"]));
+  const parsedDate = parseDate(text) || parseDate(section(text, ["Date"]));
+  if (parsedDate && !field("date").value) field("date").value = parsedDate;
+  if (!field("stats").value.trim()) {
+    const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+    const statsLine = lines.find((line) => /\d|%/.test(line) && !/^(name|department|date)\b/i.test(line));
+    if (statsLine) field("stats").value = statsLine;
+  }
+  addMsg("I auto-filled what I could. Please review the fields before generating.");
+});
+
+function incompleteFields() {
+  return ["name", "department", "stats", "date"].filter((name) => !field(name).value.trim());
+}
+
+function helpReply(text) {
+  const lower = text.toLowerCase();
+  if (lower.includes("name")) return "Name: use the employee or presenter name shown on the title slide.";
+  if (lower.includes("department")) return "Department: enter your team, such as Service, Parts, Sales, or Admin.";
+  if (lower.includes("stat") || lower.includes("kpi") || lower.includes("number")) {
+    return "Stats / Notes: add wins, percentages, KPIs, or bullet points you want highlighted in the deck.";
+  }
+  if (lower.includes("date")) return "Date: choose the presentation date or reporting period end date.";
+  if (lower.includes("paste") || lower.includes("auto")) {
+    return "Paste rough notes at the top and click Auto-Fill Fields. I will populate empty fields without overwriting what you already typed.";
+  }
+  if (lower.includes("ready") || lower.includes("generate") || lower.includes("submit")) {
+    const missing = incompleteFields();
+    if (missing.length) return "Before generating, please fill: " + missing.join(", ") + ".";
+    return "Everything looks ready. Click Create My PowerPoint when you are satisfied.";
+  }
+  return "I can help with Name, Department, Stats / Notes, and Date. You can also paste notes and use Auto-Fill Fields.";
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const missing = incompleteFields();
+  if (missing.length) addMsg("Before generating, please fill: " + missing.join(", ") + ".");
+  result.style.display = "none";
+  errorBox.style.display = "none";
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = "Creating...";
+
+  const data = Object.fromEntries(new FormData(form).entries());
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     });
-    const data=await res.json(); if(!res.ok) throw new Error(data.error || "Something went wrong.");
-    add(data.reply, data.canDownload ? "system" : "assistant");
-    if(data.previewHtml){ showPreview(data.previewHtml); statusEl.textContent = data.deck.slides.length + " slides generated. Ask for changes or download."; }
-    if(data.canDownload) download.disabled=false;
-    if(data.geminiConfigured === false) add("Note: Gemini API key is not configured yet, so this preview used a built-in fallback planner. Add GEMINI_API_KEY in Railway for full AI behavior.","system");
-  }catch(err){ add(err.message || String(err),"system"); }
-  finally{ setBusy(false); }
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.error || "Unable to create presentation.");
+    }
+    downloadLink.href = payload.downloadUrl;
+    previewLink.href = payload.previewUrl;
+    result.style.display = "block";
+    addMsg("Your presentation is ready. Use the download link on the page.");
+  } catch (error) {
+    errorBox.textContent = error.message || String(error);
+    errorBox.style.display = "block";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create My PowerPoint";
+  }
 });
-download.addEventListener("click", async ()=>{
-  download.disabled=true; download.textContent="Preparing...";
-  try{
-    const res=await fetch(API + "/api/ai-presentations/" + sessionId + "/download", {method:"POST"});
-    const data=await res.json(); if(!res.ok) throw new Error(data.error || "Unable to export.");
-    window.open(data.downloadUrl, "_blank"); add("Your personal PowerPoint download opened in a new tab.","system");
-  }catch(err){ add(err.message || String(err),"system"); }
-  finally{ download.disabled=false; download.textContent="Download PowerPoint"; }
+
+document.getElementById("chat-toggle").addEventListener("click", () => {
+  const chat = document.getElementById("chat");
+  chat.style.display = chat.style.display === "flex" ? "none" : "flex";
 });
-start().catch(err=>add("Could not start chat: "+err.message,"system"));
+
+document.getElementById("chat-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  addMsg(text, "user");
+  addMsg(helpReply(text));
+});
 </script>
 </body>
 </html>
